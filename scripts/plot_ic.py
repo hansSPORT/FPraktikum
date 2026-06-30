@@ -90,7 +90,7 @@ T_min_c, T_max_c = min(T_all), max(T_all)
 
 # --- Inset vorbereiten ---
 ax_in = inset_axes(ax1, width='42%', height='45%', loc='upper left',
-                   bbox_to_anchor=(0.08, 0.02, 1, 1),
+                   bbox_to_anchor=(0.08, -0.04, 1, 1),
                    bbox_transform=ax1.transAxes)
 
 Ic_max_mA = max(Ic_fit_uA) / 1000 * 1.35  # etwas über dem größten Ic
@@ -124,7 +124,7 @@ ax_in.set_xlim(0, Ic_max_mA)
 ax_in.set_ylim(-0.05, 2.5)
 ax_in.tick_params(labelsize=8)
 ax_in.grid(True, alpha=0.3)
-ax_in.set_title('Übergangsbereich', fontsize=8, pad=3)
+
 ax_in.legend(fontsize=7, loc='upper left')
 
 # Rechteck im Hauptplot markieren
