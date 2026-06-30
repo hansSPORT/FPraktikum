@@ -129,15 +129,16 @@ T_min_c, T_max_c = min(T_all), max(T_all)
 for T, B_mT, V_arr, Bc, status, complete in all_data:
     color = cmap((T - T_min_c) / (T_max_c - T_min_c))
     if status == 'ok':
-        ax1.plot(B_mT, V_arr * 1e3, color=color, lw=1.5, alpha=0.9, zorder=3)
+        # Plateau nur 150 mT hinter Bc zeigen — verhindert Überlagerungsartefakt
+        B_end = (Bc + 150) if Bc is not None else B_mT[-1]
+        mask = B_mT <= B_end
+        ax1.plot(B_mT[mask], V_arr[mask] * 1e3, color=color, lw=1.5, alpha=0.9, zorder=3)
         if Bc is not None:
             Bc_V = np.interp(Bc, B_mT, V_arr)
             ax1.plot(Bc, Bc_V * 1e3, 'o', color=color, ms=6,
                      markeredgecolor='k', markeredgewidth=0.7, zorder=5)
-    elif status == 'already_normal':
-        ax1.plot(B_mT, V_arr * 1e3, color=color, lw=1.0, ls=':', alpha=0.4, zorder=2)
     elif status == 'no_transition':
-        ax1.plot(B_mT, V_arr * 1e3, color=color, lw=1.0, ls='--', alpha=0.55, zorder=2)
+        ax1.plot(B_mT, V_arr * 1e3, color=color, lw=1.2, ls='--', alpha=0.75, zorder=2)
 
 sm = plt.cm.ScalarMappable(cmap=cmap, norm=plt.Normalize(T_min_c, T_max_c))
 sm.set_array([])
@@ -146,10 +147,8 @@ cbar.set_label('$T$ (K)', fontsize=12)
 
 legend_els = [
     Line2D([0],[0], color='dimgray', lw=1.5, label='SC→N Übergang'),
-    Line2D([0],[0], color='dimgray', lw=1.0, ls='--', alpha=0.7,
+    Line2D([0],[0], color='dimgray', lw=1.2, ls='--', alpha=0.75,
            label=r'kein Übergang ($B_c > B_\mathrm{max}$)'),
-    Line2D([0],[0], color='dimgray', lw=1.0, ls=':', alpha=0.6,
-           label='bereits normal bei $B=0$'),
     Line2D([0],[0], marker='o', color='dimgray', ms=6, lw=0,
            markeredgecolor='k', label='$B_c$ (50%-Schwelle)'),
 ]
@@ -158,7 +157,7 @@ ax1.set_xlabel(r'$\mu_0 H$ (mT)', fontsize=13)
 ax1.set_ylabel('$U$ (mV)', fontsize=13)
 ax1.set_title('Spannungstransition Pb-Film: $U(B)$ bei verschiedenen Temperaturen', fontsize=12)
 ax1.grid(True, alpha=0.3)
-ax1.set_xlim(left=0)
+ax1.set_xlim(0, 1060)
 plt.tight_layout()
 fig1.savefig(os.path.join(FIG_DIR, "fig_vb_curves.pdf"), dpi=150)
 fig1.savefig(os.path.join(FIG_DIR, "fig_vb_curves.png"), dpi=150)
@@ -185,10 +184,10 @@ if mask_anomal.any():
              's', color='steelblue', ms=8, markerfacecolor='none',
              markeredgewidth=1.5, zorder=5, label=r'Anomal: $T > T_c$ (Fit)')
 
-# Untere Schranke
+# Untere Schranke (aufwärts-Dreieck: wahrer Bc liegt ÜBER dem Marker)
 for T, B_mT, V_arr, Bc, status, complete in all_data:
     if status == 'no_transition':
-        ax2.plot(T, B_mT[-1], 'v', color='steelblue', ms=10, alpha=0.55, zorder=4)
+        ax2.plot(T, B_mT[-1], '^', color='steelblue', ms=10, alpha=0.75, zorder=4)
 
 # Fit-Kurve: nur im Bereich der Daten
 T_data_min = min(T for T, B_mT, V_arr, Bc, status, complete in all_data if status == 'ok')
@@ -200,13 +199,13 @@ ax2.axvline(Tc_fit, ls='--', color='tomato', alpha=0.4, lw=1.2)
 ax2.text(Tc_fit + 0.02, max(Bc_fit) * 0.05,
          f'$T_c = {Tc_fit:.3f}$ K', color='tomato', fontsize=9, va='bottom')
 
-# Pb-Bulk: mit Annotation sichtbar machen
-T_bulk = np.linspace(4.5, 7.2, 200)
+# Pb-Bulk: gepunktet, mit Label direkt an der Linie
+T_bulk = np.linspace(4.5, 7.0, 200)
 Bc_bulk = 80 * (1 - (T_bulk / 7.2)**2)
-ax2.plot(T_bulk, Bc_bulk, ':', color='k', alpha=0.6, lw=2.0)
-ax2.annotate('Pb Bulk\n(Lit.)', xy=(6.0, 80*(1-(6.0/7.2)**2)), xytext=(5.8, 180),
-             fontsize=8, color='k', alpha=0.7,
-             arrowprops=dict(arrowstyle='->', color='k', alpha=0.5, lw=0.8))
+ax2.plot(T_bulk, Bc_bulk, '--', color='dimgray', alpha=0.75, lw=1.8)
+T_lbl = 5.75
+ax2.text(T_lbl, 80*(1-(T_lbl/7.2)**2) + 22, 'Pb Bulk (Lit.)',
+         fontsize=8, color='dimgray', alpha=0.9, va='bottom')
 
 # Legende
 from matplotlib.lines import Line2D
@@ -214,8 +213,8 @@ leg_els = [
     Line2D([0],[0], marker='o', color='steelblue', ms=8, lw=0, label='Messwerte $B_c$'),
     Line2D([0],[0], marker='s', color='steelblue', ms=8, lw=0, markerfacecolor='none',
            markeredgewidth=1.5, label=r'anomal ($T > T_c$ aus Fit)'),
-    Line2D([0],[0], marker='v', color='steelblue', ms=10, lw=0, alpha=0.6,
-           label=r'$B_c > B_\mathrm{max}$ (Schranke)'),
+    Line2D([0],[0], marker='^', color='steelblue', ms=10, lw=0, alpha=0.75,
+           label=r'$B_c > B_\mathrm{max}$ (untere Schranke)'),
     Line2D([0],[0], color='tomato', lw=2.2, label=f'parabolischer Fit'),
 ]
 ax2.legend(handles=leg_els, fontsize=9)
@@ -223,7 +222,7 @@ ax2.set_xlabel('$T$ (K)', fontsize=13)
 ax2.set_ylabel(r'$\mu_0 H_c$ (mT)', fontsize=13)
 ax2.set_title('Phasendiagramm $B_c(T)$ — Pb-Film (100 nm)', fontsize=12)
 ax2.grid(True, alpha=0.3)
-ax2.set_xlim(5.6, 7.3)
+ax2.set_xlim(5.6, 7.0)
 ax2.set_ylim(bottom=0)
 plt.tight_layout()
 fig2.savefig(os.path.join(FIG_DIR, "fig_bc_phase.pdf"), dpi=150)

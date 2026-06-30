@@ -170,7 +170,7 @@ fig2, ax2 = plt.subplots(figsize=(6.5, 4.5))
 # Untere Schranke
 for T, I_pos, V_pos, Ic, status, V_base in all_data:
     if status == 'no_transition':
-        ax2.plot(T, I_pos[-1]*1e6, 'v', color='darkorchid', ms=9,
+        ax2.plot(T, I_pos[-1]*1e6, '^', color='darkorchid', ms=9,
                  markerfacecolor='none', markeredgewidth=1.8,
                  alpha=0.8, zorder=4)
 
@@ -189,9 +189,9 @@ ax2.text(Tc_fixed + 0.005, 100, f'$T_c={Tc_fixed:.3f}$ K',
 leg_els = [
     Line2D([0],[0], marker='o', color='darkorchid', ms=8, lw=0,
            label='Messwerte $I_c$'),
-    Line2D([0],[0], marker='v', color='darkorchid', ms=9, lw=0,
+    Line2D([0],[0], marker='^', color='darkorchid', ms=9, lw=0,
            markerfacecolor='none', markeredgewidth=1.8, alpha=0.8,
-           label=r'$I_c > I_\mathrm{max}$ (Schranke)'),
+           label=r'$I_c > I_\mathrm{max}$ (untere Schranke)'),
     Line2D([0],[0], color='tomato', lw=2, ls='--',
            label=f'Fit: $n={popt[1]:.2f}\\pm{perr[1]:.2f}$'),
 ]
