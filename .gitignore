@@ -1,0 +1,12 @@
+report/*.aux
+report/*.bbl
+report/*.blg
+report/*.log
+report/*.out
+report/*.toc
+report/*.fls
+report/*.fdb_latexmk
+report/main-blx.bib
+__pycache__/
+*.pyc
+figures/*.png

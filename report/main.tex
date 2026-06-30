@@ -1,0 +1,75 @@
+\documentclass[12pt,a4paper]{article}
+
+% ---- Pakete ----
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath, amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{parskip}
+\usepackage[backend=bibtex, style=numeric-comp, sorting=none]{biblatex}
+\addbibresource{refs.bib}
+
+% ---- Kopf/Fuß ----
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{F-Praktikum — Supraleitung}
+\fancyhead[R]{Marks, Sporrer}
+\fancyfoot[C]{\thepage}
+
+% ---- Metadaten ----
+\hypersetup{
+    pdftitle={F-Praktikum: Supraleitung},
+    pdfauthor={Sebastian Marks, Simon Sporrer},
+    colorlinks=true, linkcolor=blue, citecolor=blue, urlcolor=blue,
+}
+
+% ====================================================================
+\begin{document}
+
+% ---- Titelseite ----
+\begin{titlepage}
+    \centering
+    \vspace*{2cm}
+    {\LARGE\bfseries F-Praktikum\\[0.4em]
+    \Huge Supraleitung\par}
+    \vspace{1.5cm}
+    {\large Versuchsdurchführung: Sommersemester 2026\par}
+    \vspace{3cm}
+    {\large
+    \textbf{Sebastian Marks}\\[0.3em]
+    \textbf{Simon Sporrer}\\[1.5em]
+    Fakultät für Physik\\
+    Universität Regensburg\par}
+    \vfill
+    {\large\today\par}
+\end{titlepage}
+
+% ---- Inhaltsverzeichnis ----
+\tableofcontents
+\newpage
+
+% ---- Kapitel ----
+\input{chapters/01_einleitung}
+\newpage
+
+\input{chapters/02_theorie}
+\newpage
+
+\input{chapters/03_aufbau}
+\newpage
+
+\input{chapters/04_auswertung}
+\newpage
+
+\input{chapters/05_diskussion}
+
+% ---- Literatur ----
+\newpage
+\printbibliography[heading=bibintoc, title={Literatur}]
+
+\end{document}

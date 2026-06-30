@@ -1,0 +1,76 @@
+% ============================================================
+%  Kapitel 2 — Theorie
+% ============================================================
+\section{Theoretische Grundlagen}
+\label{sec:theorie}
+
+\subsection{Phänomenologische Eigenschaften}
+
+Supraleiter zeichnen sich durch zwei charakteristische Eigenschaften aus:
+(i) \emph{Verschwindender Widerstand}: Unterhalb von $T_c$ ist der Gleichstromwiderstand exakt null.
+(ii) \emph{Meißner-Ochsenfeld-Effekt}: Ein Magnetfeld, das zuvor in das Material eingedrungen war, wird beim Übergang in den supraleitenden Zustand vollständig aus dem Inneren des Leiters verdrängt~\cite{Meissner1933}.
+Dieser Effekt zeigt, dass Supraleitung kein bloß widerstandsloser Zustand ist, sondern ein echter thermodynamischer Zustand mit perfektem Diamagnetismus.
+
+\subsection{London-Gleichungen}
+
+Fritz und Heinz London~\cite{London1935} beschrieben das elektromagnetische Verhalten von Supraleitern durch zwei Gleichungen.
+Die zweite London-Gleichung verknüpft den Superstrom $\mathbf{J}_s$ mit dem Magnetfeld $\mathbf{B}$:
+\begin{equation}
+    \nabla \times \mathbf{J}_s = -\frac{1}{\mu_0 \lambda_L^2}\,\mathbf{B},
+    \label{eq:london2}
+\end{equation}
+wobei die London'sche Eindringtiefe
+\begin{equation}
+    \lambda_L = \sqrt{\frac{m_e}{\mu_0\, n_s\, e^2}}
+    \label{eq:lambda}
+\end{equation}
+die charakteristische Längenskala angibt, auf der ein äußeres Magnetfeld exponentiell in den Supraleiter abfällt.
+$n_s$ ist die Dichte der Cooperpaare.
+Für Blei gilt bei $T \to 0$: $\lambda_L^{\,\mathrm{Pb}}(0) \approx 39~\mathrm{nm}$.
+
+\subsection{Typ-I-Supraleitung und das kritische Feld $B_c(T)$}
+
+Beim Typ-I-Supraleiter (z.\,B.\ Blei) gibt es genau ein kritisches Magnetfeld $B_c(T)$.
+Für $B < B_c$ befindet sich das Material im Meißner-Zustand (vollständige Feldverdrängung), für $B > B_c$ ist die Supraleitung zerstört.
+Die Temperaturabhängigkeit folgt empirisch und im Rahmen der Ginzburg-Landau-Theorie dem parabolischen Gesetz
+\begin{equation}
+    B_c(T) = B_c(0)\left[1 - \left(\frac{T}{T_c}\right)^2\right].
+    \label{eq:bc_parabola}
+\end{equation}
+Für Blei sind die Bulk-Werte: $B_c(0) \approx 80~\mathrm{mT}$ und $T_c \approx 7{,}2~\mathrm{K}$~\cite{Buckel2013}.
+
+\subsubsection*{Dünne Filme im senkrechten Magnetfeld}
+
+Für einen dünnen supraleitenden Film der Dicke $d$ (mit $d \ll \lambda_L$) in einem senkrecht zur Filmoberfläche angelegten Magnetfeld erhöht sich das effektive kritische Feld gegenüber dem Bulk erheblich.
+Die effektive Eindringtiefe des dünnen Films, auch Pearl-Länge genannt~\cite{Pearl1964}, ist
+\begin{equation}
+    \Lambda = \frac{2\lambda_L^2}{d},
+\end{equation}
+was für $d < 2\lambda_L$ zu $\Lambda > \lambda_L$ führt.
+Das geometrisch bedingte Demagnetisierungsfeld bewirkt, dass ein weit höheres äußeres Feld angelegt werden muss, um die Supraleitung zu unterdrücken.
+Experimentell werden bei dünnen Pb-Filmen in senkrechter Geometrie kritische Felder im Bereich von $\sim 0{,}1~\mathrm{T}$ bis mehreren Tesla beobachtet~\cite{Tinkham2004}.
+
+\subsection{Kritischer Strom $I_c(T)$}
+
+Neben dem kritischen Feld gibt es einen kritischen Strom $I_c(T)$.
+Übersteigt die Stromdichte den kritischen Wert $J_c$, wird durch den selbsterzeugten Magnetfluss die Supraleitung lokal zerstört.
+Im Rahmen der Ginzburg-Landau-Theorie gilt in der Nähe von $T_c$:
+\begin{equation}
+    I_c(T) \propto \left(1 - \frac{T}{T_c}\right)^n,
+    \label{eq:ic_gl}
+\end{equation}
+wobei der Exponent $n$ von der genauen Geometrie und dem Regime abhängt (typisch $n \approx 1{,}5$ bis $2$).
+
+\subsection{Typ-II-Supraleitung und YBCO}
+
+Typ-II-Supraleiter besitzen zwei kritische Felder $B_{c1}$ und $B_{c2}$.
+Für $B < B_{c1}$ besteht der Meißner-Zustand; für $B_{c1} < B < B_{c2}$ dringt das Feld in Form quantisierter Flussschläuche (Vortices) ein (Shubnikov-Phase), ohne die Supraleitung global zu zerstören.
+Erst für $B > B_{c2}$ ist die Supraleitung vollständig unterdrückt.
+
+Yttrium-Barium-Kuprat (YBa$_2$Cu$_3$O$_{7-\delta}$, YBCO) ist ein Hochtemperatur-Typ-II-Supraleiter mit $T_c \approx 92~\mathrm{K}$ und extrem hohen kritischen Feldern ($B_{c2} > 100~\mathrm{T}$).
+Die supraleitenden Eigenschaften sind stark anisotrop: In der $ab$-Ebene der CuO$_2$-Schichten ist die Leitfähigkeit deutlich größer als entlang der $c$-Achse~\cite{Buckel2013}.
+
+\subsection{Flux-Pinning und Levitation}
+
+Durch Flux-Pinning~--- das Festhalten von Vortices an Defekten im Material~--- kann ein Typ-II-Supraleiter ein eingedrungenes Magnetfeld auch nach Abkühlung unterhalb von $T_c$ fixieren (Field-Cooling).
+Dieses Phänomen ermöglicht stabile Levitation: Ein Magnet kann sowohl über als auch unter einem YBCO-Supraleiter schwebend gehalten werden, ohne zu fallen oder anzuhaften.

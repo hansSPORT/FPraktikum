@@ -1,0 +1,51 @@
+% ============================================================
+%  Kapitel 3 — Versuchsaufbau und Durchführung
+% ============================================================
+\section{Versuchsaufbau und Durchführung}
+\label{sec:aufbau}
+
+\subsection{Kryostat und Temperaturregelung}
+
+Alle Messungen am Bleifilm wurden in einem Helium-Kryostaten bei Temperaturen von $T \approx 5{,}8~\mathrm{K}$ bis $T \approx 7{,}2~\mathrm{K}$ durchgeführt.
+Der Kryostat ist mit flüssigem Helium gefüllt ($T_\mathrm{Siede} = 4{,}2~\mathrm{K}$) und thermisch durch ein Helium-Gas-Polster gegen die Außenwelt isoliert.
+Die Temperatur der Probe wird durch einen elektrischen Heizdraht im Probenraum eingestellt und von einem Cernox-Widerstandsthermometer (Lakeshore~340 Temperatur\-regler, Eingang~B) auf $\pm 5~\mathrm{mK}$ genau gemessen und geregelt.
+
+\subsection{Bleifilm-Probe}
+
+Die Probe besteht aus einem $100~\mathrm{nm}$ dicken Bleifilm, der auf einem Substrat durch Aufdampfen hergestellt wurde.
+Die elektrischen Kontakte sind als Vierpunkt-Anordnung ausgeführt: Zwei äußere Kontakte injizieren den Messstrom, zwei innere Kontakte messen die Spannung über den supraleitenden Bereich des Films.
+Durch diese Methode wird der Einfluss von Kontakt- und Zuleitungswiderständen eliminiert.
+
+\subsection{Messaufbau $B_c(T)$}
+
+Das Magnetfeld wird von einem supraleitenden Magneten (Cryomagnetics~4G, GPIB-Adresse~2) erzeugt, der senkrecht zur Filmfläche orientiert ist.
+Die Feldrampe erfolgt mit einer Rate von $\dot{I} = 0{,}05~\mathrm{A/s}$, entsprechend $\dot{B} = 0{,}05~\mathrm{A/s} \times 0{,}10524~\mathrm{T/A} = 5{,}262~\mathrm{mT/s}$.
+
+Der Messstrom durch den Film wird von einem Yokogawa~GS200-Spannungsquellengerät mit einem Vorwiderstand von $R_\mathrm{pre} = 100~\mathrm{k}\Omega$ erzeugt; bei $U_\mathrm{Yoko} = 10~\mathrm{V}$ ergibt sich ein Strom von
+\begin{equation}
+    I_\mathrm{mess} = \frac{10~\mathrm{V}}{100~\mathrm{k}\Omega} = 100~\mu\mathrm{A}.
+\end{equation}
+Die Spannung am Film wird von einem HP~3458A-Multimeter mit einem Spannungsverstärker ($\times 10$) aufgenommen.
+Die Datenerfassung erfolgt mit dem Messprogramm \textit{Lab::Moose} (Perl), das alle Messwerte im Sekundentakt aufzeichnet.
+
+\paragraph{Hinweis zur B-Feld-Rekonstruktion.}
+Im Mess-Skript war die direkte Auslesung des Ist-Magnetfeldes ($\mathtt{get\_imag}$) aus Kompatibilitätsgründen auskommentiert.
+Die B-Feld-Spalte in den Messdateien enthält daher stets den Wert $B = 0$.
+Das tatsächliche Feld wird aus der Messzeit rekonstruiert:
+\begin{equation}
+    B(t) = \dot{B} \cdot t = 5{,}262~\frac{\mathrm{mT}}{\mathrm{s}} \cdot t.
+    \label{eq:b_recon}
+\end{equation}
+Die Konsistenz dieser Rekonstruktion wurde anhand der beobachteten Übergangslängen und der Sweepzeit überprüft.
+
+\subsection{Messaufbau $I_c(T)$}
+
+Für die $I_c(T)$-Messungen wird das Yokogawa~GS200 als Spannungsquelle mit einem kleineren Vorwiderstand $R_\mathrm{pre} = 1~\mathrm{k}\Omega$ betrieben, sodass Ströme bis $I_\mathrm{max} = 4~\mathrm{mA}$ erreichbar sind.
+Bei jeder Temperatur wird $I$ von $0$ bis $I_\mathrm{max}$ in Schritten von $\Delta I = 20~\mu\mathrm{A}$ gerampt; die Filmspannung $U$ wird mit dem HP~3458A aufgezeichnet.
+Der kritische Strom $I_c$ wird als derjenige Wert bestimmt, bei dem $U$ um mehr als $500~\mu\mathrm{V}$ über die SC-Basislinie ($U_0 \approx 290~\mu\mathrm{V}$, aus Kontaktwiderstand und Thermospannung) ansteigt.
+
+\subsection{Nicht durchgeführte Versuche}
+
+Die Messung der magnetischen Suszeptibilität mittels induktiver Pickup-Spule (Versuchsteil~A.2) konnte nicht durchgeführt werden, da der entsprechende Versuchsaufbau zum Versuchstermin nicht funktionsfähig war.
+Ebenso wurden die Widerstands-Temperatur-Kurven von YBCO in $ab$- und $c$-Richtung (Versuchsteil~B) nicht gemessen, da kein entsprechender Stickstoff-Kryostat zur Verfügung stand.
+Das Levitationsexperiment (Versuchsteil~C) wurde qualitativ beobachtet, jedoch ohne quantitative Auswertung oder fotografische Dokumentation.
