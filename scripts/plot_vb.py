@@ -172,17 +172,9 @@ print("Gespeichert: fig_vb_curves")
 # ======================================================
 fig2, ax2 = plt.subplots(figsize=(7, 5))
 
-# Mess-Punkte aufteilen: normale vs. anomale (T > Tc_fit)
-mask_normal  = temps_fit <= Tc_fit
-mask_anomal  = temps_fit >  Tc_fit
-
-ax2.plot(temps_fit[mask_normal], Bc_fit[mask_normal],
-         'o', color='steelblue', ms=8, zorder=5, label='Messwerte $B_c$')
-
-if mask_anomal.any():
-    ax2.plot(temps_fit[mask_anomal], Bc_fit[mask_anomal],
-             's', color='steelblue', ms=8, markerfacecolor='none',
-             markeredgewidth=1.5, zorder=5, label=r'Anomal: $T > T_c$ (Fit)')
+# Alle Messpunkte als einheitliche Kreise (Anomalie T>Tc wird im Text diskutiert)
+ax2.plot(temps_fit, Bc_fit,
+         'o', color='steelblue', ms=8, zorder=5)
 
 # Untere Schranke (aufwärts-Dreieck: wahrer Bc liegt ÜBER dem Marker)
 for T, B_mT, V_arr, Bc, status, complete in all_data:
@@ -211,8 +203,6 @@ ax2.text(T_lbl, 80*(1-(T_lbl/7.2)**2) + 22, 'Pb Bulk (Lit.)',
 from matplotlib.lines import Line2D
 leg_els = [
     Line2D([0],[0], marker='o', color='steelblue', ms=8, lw=0, label='Messwerte $B_c$'),
-    Line2D([0],[0], marker='s', color='steelblue', ms=8, lw=0, markerfacecolor='none',
-           markeredgewidth=1.5, label=r'anomal ($T > T_c$ aus Fit)'),
     Line2D([0],[0], marker='^', color='steelblue', ms=10, lw=0, alpha=0.75,
            label=r'$B_c > B_\mathrm{max}$ (untere Schranke)'),
     Line2D([0],[0], color='tomato', lw=2.2, label=f'parabolischer Fit'),
