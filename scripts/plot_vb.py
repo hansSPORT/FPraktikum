@@ -16,9 +16,9 @@ FIG_DIR  = "/home/user/FPraktikum/figures"
 os.makedirs(FIG_DIR, exist_ok=True)
 
 B_RATE_mT_per_s = 0.05 * 0.10524 * 1000  # 5.262 mT/s
-V_SC_MAX  = 2e-3   # V
-V_N_MIN   = 3e-3   # V
-V_RANGE_MIN = 1e-3 # V
+V_SC_MAX      = 2e-3   # V — Film gilt als SC wenn V_start < 2 mV
+V_ALREADY_N   = 5.5e-3 # V — Film gilt bei B=0 schon als normal wenn V_start > 5.5 mV
+V_N_COMPLETE  = 5.5e-3 # V — Sweep gilt als "vollständig bis Normal" wenn V_end > 5.5 mV
 
 def load_vb_file(path):
     data = []
@@ -39,30 +39,9 @@ def extract_temperature(filename):
     m = re.search(r'data_[+]?([0-9]+\.[0-9]+)', os.path.basename(filename))
     return float(m.group(1)) if m else None
 
-def find_bc_50percent(B_mT, V):
-    V_start = np.median(V[:8])
-    V_end   = np.median(V[-8:])
-    if V_start > V_N_MIN and V_end > V_N_MIN:
-        return None, 'already_normal'
-    if V_start < V_SC_MAX and V_end < V_SC_MAX:
-        return None, 'no_transition'
-    if (V_end - V_start) < V_RANGE_MIN:
-        return None, 'no_transition'
-    V_thresh = 0.5 * (V_start + V_end)
-    idx = np.where(V > V_thresh)[0]
-    if len(idx) == 0:
-        return None, 'no_transition'
-    i = idx[0]
-    if i == 0:
-        return B_mT[0], 'ok'
-    frac = (V_thresh - V[i-1]) / (V[i] - V[i-1])
-    return B_mT[i-1] + frac * (B_mT[i] - B_mT[i-1]), 'ok'
-
-# --- Laden ---
+# --- Laden (Schritt 1): V_N_global aus vollständigen Messungen bestimmen ---
 files = sorted(glob.glob(os.path.join(DATA_DIR, "data_*.dat")))
-all_data = []
-temps_fit, Bc_fit = [], []
-
+raw = []
 for f in files:
     T = extract_temperature(f)
     if T is None:
@@ -70,11 +49,55 @@ for f in files:
     data = load_vb_file(f)
     if len(data) < 5:
         continue
+    raw.append((T, data))
+
+V_N_values = []
+for T, data in raw:
+    V_start = np.median(data[:8, 1])
+    V_end   = np.median(data[-8:, 1])
+    # Vollständige SC→N Transition: SC am Anfang, vollständig normal am Ende
+    if V_start < V_SC_MAX and V_end > V_N_COMPLETE:
+        V_N_values.append(np.median(data[-4:, 1]))  # letzten 4 Punkte stabiler
+
+V_N_global = np.median(V_N_values)
+print(f"V_N_global = {V_N_global*1e6:.0f} µV  (aus {len(V_N_values)} vollständigen Messungen)")
+
+def find_bc_50percent(B_mT, V, V_N_ref):
+    """50%-Schwelle mit festem V_N_ref (globalem Normalzustandswert)."""
+    V_start = np.median(V[:5])
+
+    # Schon normal bei B=0
+    if V_start > V_ALREADY_N:
+        return None, 'already_normal'
+
+    # 50%-Schwelle mit globalem V_N
+    V_thresh = 0.5 * (V_start + V_N_ref)
+
+    idx = np.where(V > V_thresh)[0]
+    if len(idx) == 0:
+        # Threshold nicht erreicht — untere Schranke
+        return None, 'no_transition'
+    i = idx[0]
+    if i == 0:
+        return B_mT[0], 'ok'
+    frac = (V_thresh - V[i-1]) / (V[i] - V[i-1])
+    return B_mT[i-1] + frac * (B_mT[i] - B_mT[i-1]), 'ok'
+
+# --- Laden (Schritt 2): Bc bestimmen ---
+all_data = []
+temps_fit, Bc_fit = [], []
+
+for T, data in raw:
     t_arr = data[:, 0]
     V_arr = data[:, 1]
     B_mT  = B_RATE_mT_per_s * t_arr
-    Bc, status = find_bc_50percent(B_mT, V_arr)
-    all_data.append((T, B_mT, V_arr, Bc, status))
+    Bc, status = find_bc_50percent(B_mT, V_arr, V_N_global)
+    V_end_meas = np.median(V_arr[-4:])
+    # Kurve: vollständig transitiert wenn V_end_meas > 90% V_N_global
+    complete = V_end_meas > 0.90 * V_N_global
+    all_data.append((T, B_mT, V_arr, Bc, status, complete))
+    marker = f"Bc={Bc:.1f} mT" if Bc else "—"
+    print(f"  T={T:.3f} K  V_end={V_end_meas*1e6:.0f}µV  complete={complete}  {status}  {marker}")
     if status == 'ok':
         temps_fit.append(T)
         Bc_fit.append(Bc)
@@ -103,7 +126,7 @@ cmap = matplotlib.colormaps['turbo']
 T_all = [d[0] for d in all_data]
 T_min_c, T_max_c = min(T_all), max(T_all)
 
-for T, B_mT, V_arr, Bc, status in all_data:
+for T, B_mT, V_arr, Bc, status, complete in all_data:
     color = cmap((T - T_min_c) / (T_max_c - T_min_c))
     if status == 'ok':
         ax1.plot(B_mT, V_arr * 1e3, color=color, lw=1.5, alpha=0.9, zorder=3)
@@ -163,12 +186,12 @@ if mask_anomal.any():
              markeredgewidth=1.5, zorder=5, label=r'Anomal: $T > T_c$ (Fit)')
 
 # Untere Schranke
-for T, B_mT, V_arr, Bc, status in all_data:
+for T, B_mT, V_arr, Bc, status, complete in all_data:
     if status == 'no_transition':
         ax2.plot(T, B_mT[-1], 'v', color='steelblue', ms=10, alpha=0.55, zorder=4)
 
 # Fit-Kurve: nur im Bereich der Daten
-T_data_min = min(T for T, *_ in all_data if _[-1] == 'ok')
+T_data_min = min(T for T, B_mT, V_arr, Bc, status, complete in all_data if status == 'ok')
 T_fit_arr  = np.linspace(T_data_min, Tc_fit, 300)
 Bc_fit_arr = bc_parabola(T_fit_arr, Bc0_fit, Tc_fit)
 ax2.plot(T_fit_arr, Bc_fit_arr, '-', color='tomato', lw=2.2,
